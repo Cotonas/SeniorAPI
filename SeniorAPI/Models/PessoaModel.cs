@@ -10,18 +10,18 @@ namespace SeniorAPI.Models
         [Key]
         [Column("Codigo")]
         public int Codigo { get; set; }
+        
         [Column("Nome")]
         public string Nome { get; set; }
+        
         [Column("Cpf")]
         public string Cpf { get; set; }
+        
         [Column("DataNascimento")]
         public DateTime DataNascimento { get; set; }
+        
         [Column("uf")]
         public string Uf { get; set; }
-
-        public PessoaModel()
-        {
-        }
 
         public PessoaModel(int codigo, string nome, string cpf, DateTime dataNascimento, string uf)
         {

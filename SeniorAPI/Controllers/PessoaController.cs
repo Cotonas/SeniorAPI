@@ -31,7 +31,6 @@ namespace SeniorAPI.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            _logger.Log(LogLevel.Error, "Teve um erro");
             var pessoa = _pessoaRepository.Get();
 
             return Ok(pessoa);
@@ -42,7 +41,7 @@ namespace SeniorAPI.Controllers
         public IActionResult GetPessoaPorCodigo(int codigo)
         {
             var pessoa = _pessoaRepository.GetPessoaPorCodigo(codigo);
-        
+
             return Ok(pessoa);
         }
 
@@ -70,7 +69,7 @@ namespace SeniorAPI.Controllers
         {
             var pessoa = _pessoaRepository.GetPessoaPorCodigo(pessoaView.Codigo);
 
-            if(pessoa != null)
+            if (pessoa != null)
             {
                 pessoa.Nome = pessoaView.Nome;
                 pessoa.Cpf = pessoaView.Cpf;
