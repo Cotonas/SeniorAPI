@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using SeniorAPI.Infraestrutura;
-using SeniorAPI.Models;
+using SeniorAPI.Interfaces;
+using SeniorAPI.Repositories;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     //c.OperationFilter<SwaggerDefaultValues>();
@@ -31,8 +32,8 @@ builder.Services.AddSwaggerGen(c =>
         {
         Reference = new OpenApiReference
             {
-            Type = ReferenceType.SecurityScheme,
-            Id = "Bearer"
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
             },
             Scheme = "oauth2",
             Name = "Bearer",
@@ -42,10 +43,7 @@ builder.Services.AddSwaggerGen(c =>
         new List<string>()
         }
     });
-
-
 });
-
 
 builder.Services.AddTransient<IPessoaRepository, PessoaRepository>();
 

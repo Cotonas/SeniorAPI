@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SeniorAPI.Interfaces;
 using SeniorAPI.Models;
-using SeniorAPI.ViewModel;
 
 namespace SeniorAPI.Controllers
 {
@@ -10,74 +10,71 @@ namespace SeniorAPI.Controllers
     public class PessoaController : ControllerBase
     {
         private readonly IPessoaRepository _pessoaRepository;
-        private readonly ILogger<PessoaController> _logger;
 
-        public PessoaController(IPessoaRepository pessoaRepository, ILogger<PessoaController> logger)
+        public PessoaController(IPessoaRepository pessoaRepository)
         {
             _pessoaRepository = pessoaRepository ?? throw new ArgumentNullException(nameof(pessoaRepository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpPost]
-        public IActionResult Add(PessoaViewModel pessoaView)
-        {
-            var pessoa = new PessoaModel(pessoaView.Codigo, pessoaView.Nome, pessoaView.Cpf, pessoaView.DataNascimento, pessoaView.UF);
-
-            _pessoaRepository.Add(pessoa);
-            return Ok();
-        }
-
         [Authorize]
-        [HttpGet]
-        public IActionResult Get()
+        public async Task<ActionResult> Add(PessoaModel pessoa)
         {
-            var pessoa = _pessoaRepository.Get();
+             await _pessoaRepository.Add(pessoa);
+             return Ok(pessoa);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Get()
+        {
+            var pessoa = await _pessoaRepository.Get();
 
             return Ok(pessoa);
         }
 
         [HttpGet]
+        [Authorize]
         [Route("{codigo}")]
-        public IActionResult GetPessoaPorCodigo(int codigo)
+        public async Task<ActionResult> GetPessoaPorCodigo(int codigo)
         {
-            var pessoa = _pessoaRepository.GetPessoaPorCodigo(codigo);
+            var pessoa = await _pessoaRepository.GetPessoaPorCodigo(codigo);
 
             return Ok(pessoa);
         }
 
         [HttpGet]
+        [Authorize]
         [Route("estado/{uf}")]
-        public IActionResult GetPessoasPorEstado(string uf)
+        public async Task<ActionResult> GetPessoasPorEstado(string uf)
         {
-            var pessoas = _pessoaRepository.GetPessoasPorEstado(uf);
+            var pessoas = await _pessoaRepository.GetPessoasPorEstado(uf);
 
             return Ok(pessoas);
         }
 
         [HttpDelete]
+        [Authorize]
         [Route("codigo")]
-        public IActionResult DeletePessoa(int codigo)
+        public async Task<ActionResult> DeletePessoa(int codigo)
         {
-            var pessoa = _pessoaRepository.GetPessoaPorCodigo(codigo);
+            var pessoa = await _pessoaRepository.GetPessoaPorCodigo(codigo);
             _pessoaRepository.Delete(pessoa);
 
             return Ok();
         }
 
         [HttpPut]
-        public IActionResult Put(PessoaViewModel pessoaView)
+        [Authorize]
+        public async Task<ActionResult> Put(PessoaModel pessoa)
         {
-            var pessoa = _pessoaRepository.GetPessoaPorCodigo(pessoaView.Codigo);
+            var _pessoa = await _pessoaRepository.GetPessoaPorCodigo(pessoa.Codigo);
+            
+            _pessoa.Nome = pessoa.Nome;
+            _pessoa.Cpf = pessoa.Cpf;
+            _pessoa.DataNascimento = pessoa.DataNascimento;
+            _pessoa.Uf = pessoa.Uf;
 
-            if (pessoa != null)
-            {
-                pessoa.Nome = pessoaView.Nome;
-                pessoa.Cpf = pessoaView.Cpf;
-                pessoa.DataNascimento = pessoaView.DataNascimento;
-                pessoa.Uf = pessoaView.UF;
-            }
-
-            _pessoaRepository.PutPessoa(pessoa);
+            await _pessoaRepository.PutPessoa(_pessoa);
 
             return Ok(pessoa);
         }

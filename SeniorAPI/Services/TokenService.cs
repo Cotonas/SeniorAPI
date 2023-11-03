@@ -1,5 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using SeniorAPI.Infraestrutura;
+using SeniorAPI.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -8,7 +8,7 @@ namespace SeniorAPI.Services
 {
     public class TokenService
     {
-        public static object GenerateToken(User user)
+        public static object GenerateToken(UserModel user)
         {
             var key = Encoding.ASCII.GetBytes(Key.Secret);
             var tokenConfig = new SecurityTokenDescriptor

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using SeniorAPI.Infraestrutura;
+using SeniorAPI.Models;
 using SeniorAPI.Services;
 
 namespace SeniorAPI.Controllers
 {
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
         [HttpPost]
         [Route("api/v1/auth")]
@@ -15,7 +15,7 @@ namespace SeniorAPI.Controllers
             {
                 if (!userName.IsNullOrEmpty() && !password.IsNullOrEmpty())
                 {
-                    var token = TokenService.GenerateToken(new User(userName, password));
+                    var token = TokenService.GenerateToken(new UserModel(userName, password));
                     return Ok(token);
                 }
                 else
