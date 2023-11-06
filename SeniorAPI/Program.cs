@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SeniorAPI.Data;
 using SeniorAPI.Interfaces;
 using SeniorAPI.Repositories;
 using System.Text;
@@ -47,7 +48,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddTransient<IPessoaRepository, PessoaRepository>();
 
-var key = Encoding.ASCII.GetBytes(SeniorAPI.Key.Secret);
+var key = Encoding.ASCII.GetBytes(Key.Secret);
 
 builder.Services.AddAuthentication(x =>
     {

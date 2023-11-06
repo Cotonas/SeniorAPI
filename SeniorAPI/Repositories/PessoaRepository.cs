@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using SeniorAPI.Data;
+using SeniorAPI.DTOModels;
 using SeniorAPI.Interfaces;
 using SeniorAPI.Models;
 
@@ -10,27 +10,33 @@ namespace SeniorAPI.Repositories
     {
         private readonly SessionContext _sessionContext = new SessionContext();
 
-        public async Task<PessoaModel> Add(PessoaModel pessoa)
+        public async Task<PessoaModel> Add(PessoaDTOModel pessoa)
         {
-            await Validacao(pessoa);
+            var _pessoa = new PessoaModel();
 
             var ultimoID = _sessionContext.Pessoas.Max(x => (int?)x.Codigo) ?? 0;
+            
             if (ultimoID == 0)
-            {
-                pessoa.Codigo = 1;
-            }
+                _pessoa.Codigo = 1;
             else
-            {
-                pessoa.Codigo = ultimoID + 1;
-            }
+                _pessoa.Codigo = ultimoID + 1;
 
-            await _sessionContext.Pessoas.AddAsync(pessoa);
+            _pessoa.Nome = pessoa.Nome;
+            _pessoa.Cpf = pessoa.Cpf;
+            _pessoa.DataNascimento = pessoa.DataNascimento.ToUniversalTime();
+            _pessoa.Uf = pessoa.Uf;
+
+            Validacao(_pessoa);
+
+            await _sessionContext.Pessoas.AddAsync(_pessoa);
             await _sessionContext.SaveChangesAsync();
-            return pessoa;
+            return _pessoa;
         }
 
-        public async void Delete(PessoaModel pessoa)
+        public async void Delete(int codigo)
         {
+            var pessoa = await GetPessoaPorCodigo(codigo);
+
             _sessionContext.Pessoas.Remove(pessoa);
             await _sessionContext.SaveChangesAsync();
         }
@@ -47,18 +53,15 @@ namespace SeniorAPI.Repositories
             var pessoa = _sessionContext.Pessoas.FirstOrDefault(x => x.Codigo == codigo);
 
             if (pessoa == null)
-            {
-                throw new Exception("Pessoa não encontrada com o código informado.");
-            }
+                throw new ApplicationException("Pessoa não encontrada com o código informado.");
 
             return pessoa;
         }
 
         public async Task<List<PessoaModel>> GetPessoasPorEstado(string uf)
         {
-
             if (uf.Length != 2)
-                throw new ApplicationException("Favor inserir apenas a sigla do estado.");
+                throw new ApplicationException("Favor insira uma sigla valida para o estado.");
 
             var pessoas = _sessionContext.Pessoas.Where(x => x.Uf.ToUpper() == uf.ToUpper()).ToList();
 
@@ -67,23 +70,30 @@ namespace SeniorAPI.Repositories
 
         public async Task<PessoaModel> PutPessoa(PessoaModel pessoa)
         {
-            await Validacao(pessoa);
+            Validacao(pessoa);
 
-            _sessionContext.Pessoas.Update(pessoa);
+            var _pessoa = await GetPessoaPorCodigo(pessoa.Codigo);
+
+            _pessoa.Nome = pessoa.Nome;
+            _pessoa.Cpf = pessoa.Cpf;
+            _pessoa.DataNascimento = pessoa.DataNascimento.ToUniversalTime();
+            _pessoa.Uf = pessoa.Uf;
+
+            _sessionContext.Pessoas.Update(_pessoa);
             await _sessionContext.SaveChangesAsync();
 
-            return pessoa;
+            return _pessoa;
         }
 
 
-        public async Task Validacao(PessoaModel pessoa)
+        public void Validacao(PessoaModel pessoa)
         {
             if (pessoa.Nome.IsNullOrEmpty())
                 throw new ApplicationException("Nome inválido.");
             else if (pessoa.Cpf.Length != 11)
                 throw new ApplicationException("CPF inválido.");
             else if (pessoa.Uf.Length != 2)
-                throw new ApplicationException("Favor inserir apenas a sigla do estado.");
+                throw new ApplicationException("Favor inserir uma sigla valida para o estado.");
         }
     }
 }

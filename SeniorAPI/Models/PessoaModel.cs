@@ -23,6 +23,10 @@ namespace SeniorAPI.Models
         [Column("uf")]
         public string Uf { get; set; }
 
+        public PessoaModel()
+        {
+        }
+
         public PessoaModel(int codigo, string nome, string cpf, DateTime dataNascimento, string uf)
         {
             Codigo = codigo;
@@ -31,6 +35,5 @@ namespace SeniorAPI.Models
             DataNascimento = dataNascimento;
             Uf = uf ?? throw new ArgumentNullException(nameof(uf));
         }
-
     }
 }

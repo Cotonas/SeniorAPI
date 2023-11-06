@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SeniorAPI.DTOModels;
 using SeniorAPI.Interfaces;
 using SeniorAPI.Models;
 
@@ -18,13 +19,14 @@ namespace SeniorAPI.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult> Add(PessoaModel pessoa)
+        public async Task<ActionResult> Add(PessoaDTOModel pessoa)
         {
-             await _pessoaRepository.Add(pessoa);
-             return Ok(pessoa);
+            await _pessoaRepository.Add(pessoa);
+            return Ok(pessoa);
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> Get()
         {
             var pessoa = await _pessoaRepository.Get();
@@ -54,11 +56,10 @@ namespace SeniorAPI.Controllers
 
         [HttpDelete]
         [Authorize]
-        [Route("codigo")]
+        [Route("{codigo}")]
         public async Task<ActionResult> DeletePessoa(int codigo)
         {
-            var pessoa = await _pessoaRepository.GetPessoaPorCodigo(codigo);
-            _pessoaRepository.Delete(pessoa);
+            _pessoaRepository.Delete(codigo);
 
             return Ok();
         }
@@ -67,14 +68,7 @@ namespace SeniorAPI.Controllers
         [Authorize]
         public async Task<ActionResult> Put(PessoaModel pessoa)
         {
-            var _pessoa = await _pessoaRepository.GetPessoaPorCodigo(pessoa.Codigo);
-            
-            _pessoa.Nome = pessoa.Nome;
-            _pessoa.Cpf = pessoa.Cpf;
-            _pessoa.DataNascimento = pessoa.DataNascimento;
-            _pessoa.Uf = pessoa.Uf;
-
-            await _pessoaRepository.PutPessoa(_pessoa);
+            await _pessoaRepository.PutPessoa(pessoa);
 
             return Ok(pessoa);
         }

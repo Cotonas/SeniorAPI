@@ -1,10 +1,11 @@
-﻿using SeniorAPI.Models;
+﻿using SeniorAPI.DTOModels;
+using SeniorAPI.Models;
 
 namespace SeniorAPI.Interfaces
 {
     public interface IPessoaRepository
     {
-        Task<PessoaModel> Add(PessoaModel pessoa);
+        Task<PessoaModel> Add(PessoaDTOModel pessoa);
 
         Task<List<PessoaModel>> Get();
 
@@ -12,7 +13,7 @@ namespace SeniorAPI.Interfaces
 
         Task<List<PessoaModel>> GetPessoasPorEstado(string uf);
 
-        void Delete(PessoaModel pessoa);
+        void Delete(int codigo);
 
         Task<PessoaModel> PutPessoa(PessoaModel pessoa);
     }

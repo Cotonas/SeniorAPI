@@ -1,4 +1,4 @@
-﻿namespace SeniorAPI
+﻿namespace SeniorAPI.Data
 {
     public class Key
     {
